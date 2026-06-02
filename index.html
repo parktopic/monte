@@ -258,6 +258,11 @@
       <div class="logo">당근 몬테소리지!</div>
       <div class="sub" id="subcount"></div>
     </div>
+    <div class="io">
+      <button class="iobtn" onclick="exportData()">백업</button>
+      <button class="iobtn" onclick="document.getElementById('importFile').click()">복원</button>
+      <input id="importFile" type="file" accept="application/json,.json" style="display:none" onchange="importData(this)">
+    </div>
   </div>
 
   <div class="content">
@@ -578,7 +583,11 @@ const riskGrad=r=>{const c=riskColor(r);return `linear-gradient(135deg,${c},${sh
 function shade(hex,p){const n=parseInt(hex.slice(1),16);let r=(n>>16)+p,g=((n>>8)&255)+p,b=(n&255)+p;
   r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));
   return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
-const gv=n=>n.length>=3?n.slice(1):n;
+const gv=n=>{n=(n||'').trim();return n.length>=3?n.slice(1):n;};
+// 받침(종성) 유무 — 끝 글자가 한글이고 종성이 있으면 true
+function hasJong(w){w=(w||'').trim();if(!w)return false;const c=w.charCodeAt(w.length-1);if(c<0xAC00||c>0xD7A3)return false;return (c-0xAC00)%28!==0;}
+// 애칭 '이' — 받침 있으면 붙이고(도윤→도윤이), 없으면 그대로(수아→수아)
+function nick(w){return (w||'')+(hasJong(w)?'이':'');}
 // ── 축 값은 선생님 기록에서 계산 (흥미도=X, 성취도=Y). 기록 전엔 인수인계 추정값으로 옅게 표시 ──
 function avg(a){return a.length?a.reduce((p,c)=>p+c,0)/a.length:0;}
 // ── 신뢰도 가중 위치 ──
@@ -688,20 +697,22 @@ function buildMap(){
   const nodes=list.map((s,i)=>{
     const m=metricsOf(s);
     // 초기 좌표 + 작은 랜덤 지터(같은 좌표 무리 깨기)
-    const jx=(Math.sin(i*12.9898)*43758.5)%1, jy=(Math.cos(i*78.233)*12543.3)%1;
+    const jx=Math.abs((Math.sin(i*12.9898)*43758.5)%1), jy=Math.abs((Math.cos(i*78.233)*12543.3)%1);
     const x=pad+((m.x-1)/4)*(W-2*pad)+jx*10;
     const y=(H-pad)-((m.y-1)/4)*(H-2*pad)+jy*10;
     return {s,m,x,y};
   });
-  // 겹침 분산 (강화: 반복↑, 간격↑)
+  // 겹침 분산 (정렬 끝나면 조기 종료 → 불필요한 반복 제거)
   const minD=62;
-  for(let it=0;it<260;it++){
+  for(let it=0;it<140;it++){
+    let moved=false;
     for(let a=0;a<nodes.length;a++)for(let b=a+1;b<nodes.length;b++){
       const dx=nodes[b].x-nodes[a].x, dy=nodes[b].y-nodes[a].y;
       let d=Math.hypot(dx,dy)||0.01;
-      if(d<minD){const push=(minD-d)/2/d; nodes[a].x-=dx*push;nodes[a].y-=dy*push;nodes[b].x+=dx*push;nodes[b].y+=dy*push;}
+      if(d<minD){const push=(minD-d)/2/d; nodes[a].x-=dx*push;nodes[a].y-=dy*push;nodes[b].x+=dx*push;nodes[b].y+=dy*push;moved=true;}
     }
     nodes.forEach(n=>{n.x=Math.max(pad,Math.min(W-pad,n.x));n.y=Math.max(pad,Math.min(H-pad,n.y));});
+    if(!moved)break;
   }
   // 1) 동그라미 아바타를 먼저 모두 배치
   nodes.forEach(n=>{
@@ -819,12 +830,12 @@ function openDetail(id){
        <div class="dnamewrap">
          <div class="dname">${s.name}${s.age?`<span class="dage">${s.age}</span>`:''}</div>
          <div class="danimal">${animalEmoji(animalOf(s))} ${ANIMAL_MEAN[animalOf(s)]}</div>
-         ${s.group?`<div class="dgroup">${s.group}(이)와 그룹 수업</div>`:''}
+         ${s.group?`<div class="dgroup">${nick(s.group)}와 그룹 수업</div>`:''}
        </div>
      </div>
      <div class="inforows">
        <div class="irow"><span class="ik">배우는 것</span><span class="iv">${learningSummary(s)}</span></div>
-       <div class="irow"><span class="ik">수업 형태</span><span class="iv">${s.fmt}${s.group?` (${s.group}(이)와 그룹)`:''}</span></div>
+       <div class="irow"><span class="ik">수업 형태</span><span class="iv">${s.fmt}${s.group?` (${nick(s.group)}와 그룹)`:''}</span></div>
        <div class="irow"><span class="ik">수업 시간</span><span class="iv">${s.time}</span></div>
        <div class="irow"><span class="ik">피드백 방식</span><span class="iv">${s.fb?s.fb+' 피드백':'-'}</span></div>
        <div class="irow"><span class="ik">수업료</span><span class="iv">${s.pay}</span></div>
@@ -982,6 +993,8 @@ function buildActs(key){
       const chip=document.createElement('div');chip.className='actpill on';chip.dataset.a=v;chip.textContent=v;
       inp.replaceWith(chip);draft.act=v;draft.step='';
       document.getElementById('stepStep').style.display='none';
+      const _gb=document.getElementById('goalBox');if(_gb)_gb.style.display='none';
+      const _nw=document.getElementById('nextWrap');if(_nw)_nw.innerHTML='';
       chip.onclick=()=>{box.querySelectorAll('.actpill').forEach(x=>x.classList.remove('on'));chip.classList.add('on');draft.act=v;};
     }};
   };
@@ -1098,7 +1111,7 @@ function genMsg(){
   L.push(`· ${a.name} 영역 — ${what}`);
   if(actInfo&&actInfo.goal)L.push(`· 이런 걸 길러요 → ${actInfo.goal} 🌱`);
   L.push(``);
-  L.push(`🌟 ${nm}(이)의 오늘 모습`);
+  L.push(`🌟 ${nick(nm)}의 오늘 모습`);
   L.push(pick(ACHLINE[r.ach]));
   if(r.int)L.push(pick(INTLINE[r.int]));
   if(growth)L.push(growth);
@@ -1112,7 +1125,7 @@ function genMsg(){
     const tail={pos:pick(['그런 모습이 참 예뻤어요. 😊','정말 기특했답니다. 😊','보는 저도 흐뭇했어요. 🥰','오늘도 한 뼘 자랐어요. 🌱']),
                 mid:pick(['오늘도 꾸준히 잘 해줬어요. 😊','늘 한결같아 든든해요.','차곡차곡 잘 쌓아가고 있어요. 🌱']),
                 neg:pick(['다음 시간엔 더 잘할 수 있도록 곁에서 도와줄게요. 💪','조금씩 나아지고 있으니 걱정 마세요. 😊','함께 천천히 연습해 갈게요. 💪'])}[r.noteTone||'pos'];
-    L.push(`${nm}(이), ${sentences.join(' 또 ')} ${tail}`);
+    L.push(`${nick(nm)}, ${sentences.join(' 또 ')} ${tail}`);
   }
   L.push(``);
   L.push(`📊 오늘의 성장`);
@@ -1122,20 +1135,52 @@ function genMsg(){
   if(HOMETIP[r.area]){L.push(``);L.push(`🏡 가정에서는`);L.push(HOMETIP[r.area]);}
   L.push(``);
   L.push((s.tags||[]).includes('대면 피드백')?pick(CLOSE_FACE):pick(CLOSE_DEF));
-  L.push(pick(ENDING).replace(/OO/g,nm));
+  L.push(pick(ENDING).replace(/OO\(이\)/g,nick(nm)).replace(/OO/g,nm));
   lastMsg=L.join('\n');
   m.textContent=lastMsg;m.style.display='block';const kr=document.getElementById('krow');if(kr)kr.style.display='flex';
 }
 function pipBar(n){return '●'.repeat(n)+'○'.repeat(5-n);}
-function softenNote(t){ // "오늘 집중을 잘했어요" → "오늘 집중을 잘했고"
-  return t.replace(/했어요/g,'했고').replace(/했어요\b/g,'했고').replace(/돼요/g,'되었고').replace(/\/$/,'').replace(/, /g,', ');
+function copyMsg(){
+  if(!lastMsg)return;
+  const ok=()=>toast('📋 복사됐어요'), no=()=>toast('복사 실패 — 메시지를 길게 눌러 직접 복사해 주세요');
+  const fallback=()=>{try{const ta=document.createElement('textarea');ta.value=lastMsg;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();const r=document.execCommand('copy');document.body.removeChild(ta);return r;}catch(e){return false;}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(lastMsg).then(ok).catch(()=>{fallback()?ok():no();});}
+  else{fallback()?ok():no();}
 }
-function copyMsg(){navigator.clipboard&&navigator.clipboard.writeText(lastMsg);toast('📋 복사됐어요');}
 
 // ── toast ──
 let toastT=null;
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),1600);}
 
+// ── 백업 / 복원 (localStorage 유실 대비: 기기 변경·캐시 삭제 시 데이터 보존) ──
+function exportData(){
+  try{
+    const payload=JSON.stringify({app:'monte',v:1,exportedAt:new Date().toISOString(),LOG,INFO});
+    const blob=new Blob([payload],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const d=new Date();const ymd=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    const a=document.createElement('a');a.href=url;a.download=`당근몬테소리_백업_${ymd}.json`;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    toast('💾 백업 파일을 내려받았어요');
+  }catch(e){toast('백업 실패');}
+}
+function importData(input){
+  const file=input.files&&input.files[0];if(!file){return;}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const o=JSON.parse(reader.result);
+      if(!o||typeof o!=='object'||(!o.LOG&&!o.INFO))throw 0;
+      if(!confirm('백업을 불러오면 지금 이 기기의 기록을 덮어씁니다. 계속할까요?')){input.value='';return;}
+      LOG=o.LOG||{};INFO=o.INFO||{};persist();
+      buildList();buildMap();
+      if(cur){renderProg();renderFeed();renderInfo();const c=document.getElementById('cntFeed');if(c)c.textContent=(LOG[cur]||[]).length;}
+      toast('✓ 복원했어요');
+    }catch(e){toast('불러오기 실패 — 올바른 백업 파일인지 확인해 주세요');}
+    input.value='';
+  };
+  reader.readAsText(file);
+}
 window.addEventListener('resize',()=>{if(document.getElementById('v-map').classList.contains('on'))buildMap();});
 
 renderDayFilter('dayfilter');renderDayFilter('dayfilter2');buildList();initMapPanZoom();setTimeout(buildMap,60);
