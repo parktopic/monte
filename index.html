@@ -9,7 +9,7 @@
 <style>
   @import url('https://fastly.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
   :root{
-    --bg:#f7f6f3; --card:#fff; --ink:#26231e; --sub:#8e887d; --line:#eeeae3;
+    --bg:#faf8f4; --card:#fff; --ink:#26231e; --sub:#8e887d; --line:#eeeae3;
     --g1:#ff7e36; --g2:#ff9d4d; --grad:linear-gradient(135deg,#ff7e36,#ff9d4d);
     --carrot:#ff7e36; --carrot-d:#ec5e1a; --leaf:#3aa856;
     --r1:#1f9d4d; --r2:#6fae2e; --r3:#e8a417; --r4:#ef6a26; --r5:#dc3023;
@@ -22,10 +22,10 @@
   .phone{max-width:480px;margin:0 auto;height:100dvh;background:var(--bg);position:relative;overflow:hidden;
     display:flex;flex-direction:column;box-shadow:0 0 40px #0000001a}
   /* top bar */
-  .topbar{padding:calc(env(safe-area-inset-top,0px) + 13px) 18px 13px;display:flex;align-items:center;gap:11px;
-    background:#fff;border-bottom:1px solid var(--line);z-index:5}
-  .topbar .mascot{width:40px;height:40px;flex:none}
-  .topbar .logo{font-size:20px;font-weight:900;letter-spacing:-.6px;color:var(--carrot)}
+  .topbar{padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 14px;display:flex;align-items:center;gap:11px;
+    background:#fff;border-bottom:1px solid #f1ede5;box-shadow:0 3px 12px #00000008;z-index:5}
+  .topbar .mascot{width:42px;height:42px;flex:none}
+  .topbar .logo{font-size:20.5px;font-weight:900;letter-spacing:-.6px;color:var(--carrot)}
   .topbar .sub{font-size:11.5px;color:var(--sub);margin-top:2px;font-weight:600}
   .topbar .io{margin-left:auto;display:flex;gap:6px}
   .iobtn{height:34px;padding:0 12px;border-radius:11px;border:1px solid var(--line);background:#fff;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--sub)}
@@ -68,7 +68,7 @@
   .maptiny{text-align:center;font-size:10.5px;color:#b6b9c0;padding:0 16px 14px}
   /* LIST */
   .listwrap{padding:6px 14px 24px}
-  .srow{display:flex;align-items:center;gap:13px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.12s}
+  .srow{display:flex;align-items:center;gap:13px;background:#fff;border:1px solid #f1ede6;border-radius:20px;padding:13px 14px;margin-bottom:10px;cursor:pointer;transition:.12s;box-shadow:0 2px 10px #00000008}
   .srow:active{transform:scale(.985);background:#fafafa}
   .srow .nm{font-weight:800;font-size:15.5px}
   .srow .mt{font-size:11.5px;color:var(--sub);margin-top:2px}
@@ -76,10 +76,33 @@
   .srow .badge{font-size:11px;font-weight:800;color:var(--carrot);background:#fff0e6;border-radius:99px;padding:3px 9px}
   .srow .chev{color:#c9ccd2;font-size:18px}
   .warn-dot{width:7px;height:7px;border-radius:50%;background:var(--r5);display:inline-block;margin-left:5px}
+  /* PAY (원비 세로축) */
+  .payhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 18px 4px}
+  .payhead .t{font-size:16px;font-weight:900;color:var(--ink);letter-spacing:-.4px}
+  .payhead .sum{font-size:12px;font-weight:700;color:var(--sub)}
+  .payhead .sum b{color:var(--carrot);font-weight:800}
+  .payaxis{position:relative;margin:8px 14px 18px;border-radius:24px;background:linear-gradient(180deg,#fff5ec 0%,#ffffff 52%,#f2f9f3 100%);border:1px solid var(--line);box-shadow:0 6px 22px #0000000d;overflow:hidden}
+  .paytick{position:absolute;left:0;right:0;height:0;display:flex;align-items:center;pointer-events:none}
+  .paytick .ln{position:absolute;left:58px;right:14px;border-top:1px dashed #ececef}
+  .paytick .lb{position:absolute;left:12px;transform:translateY(-50%);font-size:11px;font-weight:800;color:#cf8a3a;background:#fff;padding:2px 7px;border-radius:8px;box-shadow:0 1px 3px #0000000f}
+  .paydot{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;z-index:2}
+  .paydot:active .ava-circle{filter:brightness(1.08)}
+  .paydot .nm{margin-top:3px;font-size:10.5px;font-weight:800;color:#3a3d44;background:#ffffffea;padding:1px 6px;border-radius:7px;white-space:nowrap;box-shadow:0 1px 3px #0000000f}
+  .paytiny{text-align:center;font-size:10.5px;color:#b6b9c0;padding:0 16px 18px}
+  /* 함께하는 친구 */
+  .friends{margin-top:13px}
+  .friends .fl{font-size:11px;font-weight:800;color:var(--sub);margin-bottom:7px}
+  .fchips{display:flex;flex-wrap:wrap;gap:7px}
+  .fchip{display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--line);border-radius:99px;padding:5px 6px 5px 12px;font-size:12px;font-weight:800;color:#5b5f66;cursor:pointer}
+  .fchip:active{background:#faf8f4}
+  .fchip .rel{font-size:10px;font-weight:800;color:#fff;background:var(--carrot);border-radius:99px;padding:2px 8px}
+  .fchip.cousin .rel{background:#8a6fc0}
   /* bottom nav */
-  .bnav{display:flex;background:#fff;border-top:1px solid var(--line);padding-bottom:var(--safe-b);z-index:6}
-  .bnav button{flex:1;border:none;background:none;padding:10px 0 9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#b6b9c0;font-size:10.5px;font-weight:700}
+  .bnav{display:flex;background:#fff;border-top:1px solid #f1ede5;padding-bottom:var(--safe-b);box-shadow:0 -3px 14px #00000008;z-index:6}
+  .bnav button{flex:1;position:relative;border:none;background:none;padding:11px 0 9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#bcbcc4;font-size:10.5px;font-weight:700;transition:.15s}
   .bnav button.on{color:var(--carrot)}
+  .bnav button.on::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:24px;height:3px;border-radius:0 0 99px 99px;background:var(--carrot)}
+  .bnav button:active{transform:scale(.94)}
   .bnav svg{width:24px;height:24px}
   /* detail (full screen sheet) */
   .sheet{position:absolute;inset:0;background:var(--bg);z-index:20;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
@@ -96,7 +119,14 @@
   .inforows{margin-top:14px;background:#faf8f4;border:1px solid var(--line);border-radius:14px;padding:4px 14px}
   .irow{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid #efece5}
   .irow:last-child{border-bottom:none}
-  .irow .ik{width:64px;flex:none;font-size:12px;color:var(--sub);font-weight:700}
+  .irow .ik{width:82px;flex:none;font-size:12px;color:var(--sub);font-weight:700}
+  .warnstrip{margin-top:12px;background:#fff1ef;border:1px solid #f6c9c0;color:#c0392b;border-radius:12px;padding:9px 12px;font-size:12.5px;font-weight:800;line-height:1.55}
+  .listsum{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 4px 10px;font-size:12.5px;color:var(--sub);font-weight:700}
+  .listsum b{color:var(--carrot);font-weight:800}
+  .sortwrap{display:flex;gap:6px;flex:none}
+  .sortchip{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:5px 11px;font-size:12px;font-weight:700;color:var(--sub);cursor:pointer}
+  .sortchip.on{background:var(--carrot);color:#fff;border-color:var(--carrot)}
+  .paybadge{font-size:11px;font-weight:800;border-radius:99px;padding:3px 8px;white-space:nowrap}
   .irow .iv{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.4}
   .nm .age{font-size:11.5px;font-weight:700;color:var(--carrot);background:#fff0e6;padding:1px 7px;border-radius:99px;margin-left:2px}
   .tags{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
@@ -292,6 +322,13 @@
       <div class="dayfilter" id="dayfilter2"></div>
       <div class="listwrap" id="listwrap"></div>
     </div>
+
+    <!-- PAY -->
+    <div class="view" id="v-pay">
+      <div class="payhead"><div class="t">💰 원비 한눈에</div><div class="sum" id="paySum"></div></div>
+      <div class="payaxis" id="payAxis"></div>
+      <div class="paytiny">위로 갈수록 원비가 높아요 · 점을 누르면 학생 정보로 가요</div>
+    </div>
   </div>
 
   <div class="bnav">
@@ -302,6 +339,10 @@
     <button data-v="list" id="nav-list">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><circle cx="3.5" cy="6" r="1.2" fill="currentColor"/><circle cx="3.5" cy="12" r="1.2" fill="currentColor"/><circle cx="3.5" cy="18" r="1.2" fill="currentColor"/></svg>
       명단
+    </button>
+    <button data-v="pay" id="nav-pay">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 8.5l3.5 4 3.5-4M12 12.5V16M9.8 13.4h4.4M9.8 15.1h4.4"/></svg>
+      원비
     </button>
   </div>
 
@@ -793,28 +834,74 @@ function tdist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].
 function tmid(t,plane){const r=plane.getBoundingClientRect();return {x:(t[0].clientX+t[1].clientX)/2-r.left,y:(t[0].clientY+t[1].clientY)/2-r.top};}
 
 // ── LIST ──
+let listSort='day';
 function buildList(){
   const box=document.getElementById('listwrap');
-  const list=visibleStudents();
-  box.innerHTML=list.map(s=>{
+  let list=visibleStudents().slice();
+  if(listSort==='pay')list.sort((a,b)=>payNum(b)-payNum(a));
+  const total=list.reduce((p,s)=>p+payNum(s),0);
+  const head=`<div class="listsum"><span>${list.length}명 · 월 합계 <b>${total}만원</b></span>
+    <div class="sortwrap"><button class="sortchip ${listSort==='day'?'on':''}" data-s="day">요일순</button><button class="sortchip ${listSort==='pay'?'on':''}" data-s="pay">원비순</button></div></div>`;
+  const rows=list.map(s=>{
     const cnt=(LOG[s.id]||[]).length;
     const warn=(s.tags||[]).some(t=>/주의|특이|충동|멘탈|거부|어김/.test(t));
     const lv=careLvl(metricsOf(s));
+    const pc=payColor(s);const payLabel=(s.pay||'').replace('원','');
     return `<div class="srow" data-id="${s.id}">
       <div class="ava-circle" style="width:46px;height:46px;background:#fff;border:2.5px solid ${careColor(lv)};box-shadow:0 3px 9px ${careColor(lv)}33">${animalSVG(animalOf(s),careColor(lv),40)}</div>
-      <div><div class="nm">${s.name} <span class="age">${s.age||''}</span>${warn?'<span class="warn-dot"></span>':''}</div><div class="mt">${s.time} · ${s.fmt.split(' ')[0]}${s.group?' · 그룹':''}</div></div>
-      <div class="right">${cnt?`<span class="badge">${cnt}건</span>`:''}<span class="chev">›</span></div>
+      <div style="min-width:0"><div class="nm">${s.name} <span class="age">${s.age||''}</span>${warn?'<span class="warn-dot"></span>':''}</div><div class="mt">${s.time} · ${s.fmt.split(' ')[0]}${s.group?' · 그룹':''}</div></div>
+      <div class="right"><span class="paybadge" style="background:${pc}1a;color:${pc}">${payLabel}</span>${cnt?`<span class="badge">${cnt}건</span>`:''}<span class="chev">›</span></div>
     </div>`;
   }).join('')||'<div class="emptybox">결과 없음</div>';
+  box.innerHTML=head+rows;
+  box.querySelectorAll('.sortchip').forEach(c=>c.onclick=()=>{listSort=c.dataset.s;buildList();});
   box.querySelectorAll('.srow').forEach(r=>r.onclick=()=>openDetail(r.dataset.id));
 }
 
 // ── nav ──
+const byName=Object.fromEntries(S.map(s=>[s.name,s.id]));
+function friendsOf(s){
+  const out=[],seen={};
+  const add=(name,rel)=>{if(!name||seen[name]||name===s.name)return;seen[name]=1;out.push({name:name,rel:rel,id:byName[name]});};
+  if(s.group)add(s.group,'그룹');
+  (s.tags||[]).forEach(t=>{const m=t.match(/사촌\(([^)]+)\)/);if(m)add(m[1],'사촌');});
+  return out;
+}
+// ── 원비 세로축 (비쌀수록 위, 같은 금액은 가로로 펼침) ──
+function buildPay(){
+  const box=document.getElementById('payAxis');if(!box)return;
+  const list=S.slice();
+  const vals=list.map(payNum);
+  const mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+  const total=vals.reduce((a,b)=>a+b,0);
+  const sumEl=document.getElementById('paySum');if(sumEl)sumEl.innerHTML=list.length+'명 · 월 합계 <b>'+total+'만원</b>';
+  const H=Math.max(420,Math.min(window.innerHeight-235,640));box.style.height=H+'px';
+  const padT=40,padB=40;
+  const yOf=v=>mx===mn?H/2:padT+(mx-v)/(mx-mn)*(H-padT-padB);
+  const tiers=Array.from(new Set(vals)).sort((a,b)=>b-a);
+  box.innerHTML=tiers.map(t=>`<div class="paytick" style="top:${yOf(t)}px"><span class="lb">${t}만</span><span class="ln"></span></div>`).join('');
+  const W=box.clientWidth||360, left=66, right=W-22;
+  const byTier={};list.forEach(s=>{const v=payNum(s);(byTier[v]=byTier[v]||[]).push(s);});
+  Object.keys(byTier).forEach(v=>{
+    const arr=byTier[v],n=arr.length;
+    arr.forEach((s,i)=>{
+      const x=n===1?(left+right)/2:left+(right-left)*(i/(n-1));
+      const y=yOf(+v)+(n>4?((i%2)*24-12):0);   // 같은 금액 많으면 위아래로 살짝 엇갈리게
+      const lv=careLvl(metricsOf(s));
+      const dot=document.createElement('div');dot.className='paydot';
+      dot.style.left=x+'px';dot.style.top=y+'px';
+      dot.innerHTML=`<div class="ava-circle" style="width:38px;height:38px;background:#fff;border:2.5px solid ${careColor(lv)};box-shadow:0 3px 9px ${careColor(lv)}33">${animalSVG(animalOf(s),careColor(lv),32)}</div><div class="nm">${gv(s.name)}</div>`;
+      dot.onclick=()=>openDetail(s.id);
+      box.appendChild(dot);
+    });
+  });
+}
 function showView(v){
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
   document.getElementById('v-'+v).classList.add('on');
   document.querySelectorAll('.bnav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   if(v==='map')setTimeout(buildMap,30);
+  if(v==='pay')setTimeout(buildPay,30);
 }
 document.querySelectorAll('.bnav button').forEach(b=>b.onclick=()=>showView(b.dataset.v));
 
@@ -833,15 +920,19 @@ function openDetail(id){
          ${s.group?`<div class="dgroup">${nick(s.group)}와 그룹 수업</div>`:''}
        </div>
      </div>
+     ${(()=>{const wt=(s.tags||[]).filter(t=>/주의|특이|충동|멘탈|거부|어김/.test(t));return wt.length?`<div class="warnstrip">⚠️ 주의 — ${wt.join(' · ')}</div>`:'';})()}
      <div class="inforows">
-       <div class="irow"><span class="ik">배우는 것</span><span class="iv">${learningSummary(s)}</span></div>
-       <div class="irow"><span class="ik">수업 형태</span><span class="iv">${s.fmt}${s.group?` (${nick(s.group)}와 그룹)`:''}</span></div>
-       <div class="irow"><span class="ik">수업 시간</span><span class="iv">${s.time}</span></div>
-       <div class="irow"><span class="ik">피드백 방식</span><span class="iv">${s.fb?s.fb+' 피드백':'-'}</span></div>
-       <div class="irow"><span class="ik">수업료</span><span class="iv">${s.pay}</span></div>
+       <div class="irow"><span class="ik">📍 현재</span><span class="iv">${devSummary(s)}</span></div>
+       <div class="irow"><span class="ik">🎯 다음</span><span class="iv">${nextGoal(s)}</span></div>
+       <div class="irow"><span class="ik">📚 배우는 것</span><span class="iv">${learningSummary(s)}</span></div>
+       <div class="irow"><span class="ik">🧩 형태</span><span class="iv">${/^1:1/.test(s.fmt)?'개별':'그룹'} · ${s.fmt}${s.group?` · ${nick(s.group)}와 함께`:''}</span></div>
+       <div class="irow"><span class="ik">🕒 시간</span><span class="iv">${s.time}</span></div>
+       <div class="irow"><span class="ik">💬 피드백</span><span class="iv">${s.fb?s.fb+' 피드백':'-'}</span></div>
+       <div class="irow"><span class="ik">💰 원비</span><span class="iv">${s.pay}</span></div>
      </div>
      <div class="tags">${(s.tags||[]).map(t=>`<span class="tag ${/주의|특이|충동|멘탈|거부|어김/.test(t)?'warn':''}">${t}</span>`).join('')}</div>
      ${s.star?`<div class="star">⭐ ${s.star}</div>`:''}
+     ${(()=>{const fr=friendsOf(s);return fr.length?`<div class="friends"><div class="fl">👫 함께하는 친구</div><div class="fchips">${fr.map(f=>`<div class="fchip ${f.rel==='사촌'?'cousin':''}" ${f.id?`onclick="openDetail('${f.id}')"`:''}>${f.name}<span class="rel">${f.rel}</span></div>`).join('')}</div></div>`:'';})()}
    </div>
    <div class="dbody">
      <div id="progWrap"></div>
@@ -865,6 +956,25 @@ function openDetail(id){
 function closeDetail(){document.getElementById('detail').classList.remove('on');cur=null;buildMap();buildList();}
 
 function areaSummary(id){const sum={};(LOG[id]||[]).forEach(e=>{if(!sum[e.area]||e.ts>sum[e.area].ts)sum[e.area]={ach:e.ach,ts:e.ts};});return sum;}
+// 현재 발달 한 줄 요약 (지도 사분면 + 기록수)
+function devSummary(s){
+  const m=metricsOf(s);
+  const q=(m.x>=3&&m.y>=3)?'잘 크는 중':(m.x<3&&m.y>=3)?'능력은 충분(흥미 ↑ 필요)':(m.x>=3&&m.y<3)?'즐기며 천천히':'집중 관리 필요';
+  return m.n?`${q} · 기록 ${m.n}건`:`${q} (기록 전 추정)`;
+}
+// 다음 추천: 교사가 적어둔 다음 차시 → 없으면 최근 활동의 다음 단계
+function nextGoal(s){
+  const logs=(LOG[s.id]||[]).slice().sort((a,b)=>b.ts-a.ts);
+  if(!logs.length)return '첫 기록을 남기면 추천이 떠요';
+  const r=logs[0];
+  if(r.next)return r.next;
+  const steps=stepsOf(r.area,r.act);
+  if(steps.length&&r.step){const i=steps.indexOf(r.step);if(i>=0&&i<steps.length-1)return `${r.act} — ${steps[i+1]}`;}
+  return `${r.act} 복습·심화`;
+}
+// 원비 숫자/색 (만원 단위)
+function payNum(s){return parseInt(((s.pay||'').match(/\d+/)||[0])[0],10)||0;}
+function payColor(s){const p=payNum(s);return p>=62?'#dc3023':p>=60?'#ef6a26':p>=57?'#e8a417':'#1f9d4d';}
 function learningSummary(s){
   const logs=LOG[s.id]||[];
   if(logs.length){const acts=[...new Set(logs.slice().sort((a,b)=>b.ts-a.ts).map(e=>e.act))].slice(0,3);return acts.join(', ');}
