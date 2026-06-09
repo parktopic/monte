@@ -30,6 +30,8 @@
   .topbar .io{margin-left:auto;display:flex;gap:6px}
   .iobtn{height:34px;padding:0 12px;border-radius:11px;border:1px solid var(--line);background:#fff;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--sub)}
   .iobtn:active{background:#f7f6f3}
+  .backupbtn{flex:none;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:18px;cursor:pointer}
+  .backupbtn:active{background:#f7f6f3}
   /* content */
   .content{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;-webkit-overflow-scrolling:touch}
   .view{display:none;min-height:100%}
@@ -147,6 +149,14 @@
   .rsheet{position:absolute;left:0;right:0;bottom:0;top:max(env(safe-area-inset-top,0px),24px);background:#fff;z-index:40;border-radius:26px 26px 0 0;
     transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:0 -10px 40px #0003}
   .rsheet.on{transform:translateY(0)}
+  .scrim2{position:absolute;inset:0;background:#0006;opacity:0;pointer-events:none;transition:.2s;z-index:44}
+  .scrim2.on{opacity:1;pointer-events:auto}
+  .bsheet{position:absolute;left:0;right:0;bottom:0;background:#fff;z-index:45;border-radius:26px 26px 0 0;transform:translateY(110%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:0 -10px 40px #0003;padding-bottom:var(--safe-b)}
+  .bsheet.on{transform:translateY(0)}
+  .bbtn{width:100%;border:1px solid var(--line);background:#fff;border-radius:13px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;margin-top:9px;color:var(--ink)}
+  .bbtn.primary{background:var(--carrot);color:#fff;border-color:var(--carrot)}
+  .bbtn.ghost{border:none;color:var(--sub);font-weight:700}
+  .bbtn:active{filter:brightness(.96)}
   .rhandle{width:40px;height:5px;border-radius:99px;background:#e2e2e6;margin:10px auto 4px}
   .rhead{padding:6px 18px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center}
   .rhead .t{font-size:17px;font-weight:800}
@@ -262,10 +272,12 @@
         <path d="M30 32 Q32 35 34 32" stroke="#3a2a18" stroke-width="1.6" fill="none" stroke-linecap="round"/>
       </g>
     </svg>
-    <div>
+    <div style="flex:1">
       <div class="logo">당근 몬테소리지!</div>
       <div class="sub" id="subcount"></div>
     </div>
+    <button class="backupbtn" onclick="openBackup()" title="기록 백업">💾</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none">
   </div>
 
   <div class="content">
@@ -313,6 +325,22 @@
 
   <!-- RECORD SHEET -->
   <div class="rsheet" id="rsheet"></div>
+
+  <!-- BACKUP SHEET -->
+  <div id="scrim2" class="scrim2"></div>
+  <div class="bsheet" id="bsheet">
+    <div class="rhandle"></div>
+    <div style="padding:4px 22px 22px">
+      <div style="font-size:18px;font-weight:800;text-align:center;margin-bottom:4px">💾 기록 백업 / 복원</div>
+      <div style="font-size:12.5px;color:var(--sub);text-align:center;line-height:1.6;margin-bottom:18px">입력한 기록은 이 기기에만 저장돼요.<br>가끔 백업해두면 기기를 바꿔도 안전해요.</div>
+      <button class="bbtn primary" onclick="doExport()">⬇ 내 기록 백업하기 (파일로 저장)</button>
+      <button class="bbtn" onclick="document.getElementById('importFile').click()">⬆ 백업 파일 불러오기</button>
+      <div style="font-size:11px;color:var(--sub);line-height:1.6;margin-top:14px;background:#faf8f4;border-radius:10px;padding:11px 13px">
+        💡 백업 파일은 카톡 '나와의 채팅'에 보내두면 안전하게 보관돼요. 나중에 정식 버전으로 옮길 때 이 파일을 쓰면 됩니다.
+      </div>
+      <button class="bbtn ghost" onclick="closeBackup()" style="margin-top:8px">닫기</button>
+    </div>
+  </div>
 
   <div class="toast" id="toast"></div>
 </div>
@@ -1162,6 +1190,34 @@ function copyMsg(){navigator.clipboard&&navigator.clipboard.writeText(lastMsg);t
 // ── toast ──
 let toastT=null;
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),1600);}
+
+// ── 백업 / 복원 ──
+function openBackup(){document.getElementById('bsheet').classList.add('on');document.getElementById('scrim2').classList.add('on');}
+function closeBackup(){document.getElementById('bsheet').classList.remove('on');document.getElementById('scrim2').classList.remove('on');}
+document.getElementById('scrim2').onclick=closeBackup;
+function todayFile(){const d=new Date();return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;}
+function doExport(){
+  const data={app:'당근몬테소리지',ver:1,exportedAt:new Date().toISOString(),LOG:LOG,INFO:INFO,
+    scores:S.map(s=>({id:s.id,risk:s.risk,joy:s.joy}))};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='당근몬테소리_백업_'+todayFile()+'.json';a.click();
+  toast('백업 파일을 저장했어요 💾');
+}
+document.getElementById('importFile').onchange=function(e){
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{
+    const o=JSON.parse(r.result);
+    if(!o.LOG&&!o.INFO){toast('백업 파일이 아니에요');return;}
+    if(!confirm('백업 파일을 불러올까요?\n\n현재 입력된 기록은 백업 내용으로 덮어쓰여요.'))return;
+    if(o.LOG)LOG=o.LOG; if(o.INFO)INFO=o.INFO;
+    (o.scores||[]).forEach(sc=>{const s=byId[sc.id];if(s){if(sc.risk!=null)s.risk=sc.risk;if(sc.joy!=null)s.joy=sc.joy;}});
+    persist();buildMap();buildList();closeBackup();toast('불러오기 완료! 📂');
+  }catch(err){toast('파일을 읽을 수 없어요');}
+  e.target.value='';
+  };
+  r.readAsText(f);
+};
 
 window.addEventListener('resize',()=>{if(document.getElementById('v-map').classList.contains('on'))buildMap();});
 
