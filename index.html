@@ -97,6 +97,7 @@
   .infofold>summary::-webkit-details-marker{display:none}
   .infofold>summary::after{content:"⌄";margin-left:auto;font-size:15px}
   .infofold[open]>summary::after{content:"⌃"}
+  .infofold[open]>summary .when{display:none}
   .infofold .inforows{margin:0 0 12px;background:none;border:none;padding:0}
   .dnamewrap{flex:1}
   .dname{font-size:21px;font-weight:800;display:flex;align-items:baseline;gap:8px}
@@ -865,7 +866,7 @@ function openDetail(id){
          <div class="danimal">${animalEmoji(animalOf(s))} ${ANIMAL_MEAN[animalOf(s)]}</div>
        </div>
      </div>
-     <details class="infofold"><summary>학생 정보 · ${timeLabel(s)}</summary>
+     <details class="infofold"><summary>학생 정보<span class="when"> · ${timeLabel(s)}</span></summary>
        <div class="inforows">
          <div class="irow"><span class="ik">수업 형태</span><span class="iv">${classTypeLabel(s)}</span></div>
          <div class="irow"><span class="ik">수업 시간</span><span class="iv">${timeLabel(s)}</span></div>
@@ -873,8 +874,6 @@ function openDetail(id){
          <div class="irow"><span class="ik">수업료</span><span class="iv">${s.pay}</span></div>
          <div class="irow"><span class="ik">배우는 것</span><span class="iv">${learningSummary(s)}</span></div>
        </div>
-       ${(()=>{const tg=(s.tags||[]).filter(t=>!/^그룹|대면 피드백|학부모 톡방/.test(t));return tg.length?`<div class="tags">${tg.map(t=>`<span class="tag ${/주의|특이|충동|멘탈|거부|어김/.test(t)?'warn':''}">${t}</span>`).join('')}</div>`:'';})()}
-       ${s.star?`<div class="star">⭐ ${s.star}</div>`:''}
      </details>
    </div>
    <div class="dbody">
