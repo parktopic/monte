@@ -862,18 +862,18 @@ function openDetail(id){
        <div class="ava-circle" style="width:56px;height:56px;background:#fff;border:3px solid ${careColor(careLvl(metricsOf(s)))};box-shadow:0 4px 12px ${careColor(careLvl(metricsOf(s)))}44">${animalSVG(animalOf(s),careColor(careLvl(metricsOf(s))),48)}</div>
        <div class="dnamewrap">
          <div class="dname">${s.name}${s.age?`<span class="dage">${s.age}</span>`:''}</div>
-         <div class="danimal">${animalEmoji(animalOf(s))} ${ANIMAL_MEAN[animalOf(s)]}${s.group?` · ${s.group}(이)와 그룹`:''}</div>
+         <div class="danimal">${animalEmoji(animalOf(s))} ${ANIMAL_MEAN[animalOf(s)]}</div>
        </div>
      </div>
-     <details class="infofold"><summary>학생 정보 ${s.fmt} · ${s.time} · ${s.pay}</summary>
+     <details class="infofold"><summary>학생 정보 · ${timeLabel(s)}</summary>
        <div class="inforows">
-         <div class="irow"><span class="ik">배우는 것</span><span class="iv">${learningSummary(s)}</span></div>
-         <div class="irow"><span class="ik">수업 형태</span><span class="iv">${s.fmt}${s.group?` · ${s.group}(이)와 그룹`:''}</span></div>
-         <div class="irow"><span class="ik">수업 시간</span><span class="iv">${s.time}</span></div>
+         <div class="irow"><span class="ik">수업 형태</span><span class="iv">${classTypeLabel(s)}</span></div>
+         <div class="irow"><span class="ik">수업 시간</span><span class="iv">${timeLabel(s)}</span></div>
          <div class="irow"><span class="ik">피드백</span><span class="iv">${fbLabel(s.fb)}</span></div>
          <div class="irow"><span class="ik">수업료</span><span class="iv">${s.pay}</span></div>
+         <div class="irow"><span class="ik">배우는 것</span><span class="iv">${learningSummary(s)}</span></div>
        </div>
-       <div class="tags">${(s.tags||[]).map(t=>`<span class="tag ${/주의|특이|충동|멘탈|거부|어김/.test(t)?'warn':''}">${t}</span>`).join('')}</div>
+       ${(()=>{const tg=(s.tags||[]).filter(t=>!/^그룹|대면 피드백|학부모 톡방/.test(t));return tg.length?`<div class="tags">${tg.map(t=>`<span class="tag ${/주의|특이|충동|멘탈|거부|어김/.test(t)?'warn':''}">${t}</span>`).join('')}</div>`:'';})()}
        ${s.star?`<div class="star">⭐ ${s.star}</div>`:''}
      </details>
    </div>
@@ -901,9 +901,27 @@ function areaSummary(id){const sum={};(LOG[id]||[]).forEach(e=>{if(!sum[e.area]|
 // 피드백 방식 라벨 정리 (중복 '피드백' 제거, 복합값 단순화)
 function fbLabel(fb){
   if(!fb)return '-';
-  // 첫 번째 방식만 대표로 (대면/카톡, 대면→카톡 → 대면)
   const main=fb.split(/[\/→]/)[0].trim();
   return main;  // "카톡" / "대면" / "문자" / "전화"
+}
+const DAYFULL={'화':'화요일','수':'수요일','목':'목요일','금':'금요일','토':'토요일'};
+// "토 10시"+"2:1 50분" → "토요일 10:00~10:50 (50분)"
+function timeLabel(s){
+  const m=(s.time||'').match(/([화수목금토])\s*(\d{1,2})시\s*(\d{1,2})?분?/);
+  const dur=(s.fmt.match(/(\d+)분/)||[])[1]||40;
+  if(!m)return s.time||'-';
+  const day=DAYFULL[m[1]]||m[1];
+  let hh=+m[2], mm=+(m[3]||0);
+  if(hh<9)hh+=12;  // 1~8시는 오후로 (학원 수업 시간대)
+  const start=hh*60+mm, end=start+(+dur);
+  const fmt=t=>`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
+  return `${day} ${fmt(start)}~${fmt(end)} (${dur}분)`;
+}
+// "1:1 40분"/"2:1 50분"+그룹대상 → "1:1 개별" / "그룹(2:1) · OO와 함께"
+function classTypeLabel(s){
+  const ratio=(s.fmt.match(/(\d+:\d+)/)||[])[1]||'1:1';
+  if(ratio==='1:1')return '1:1 개별 수업';
+  return `그룹 ${ratio}${s.group?` · ${s.group}(이)와 함께`:''}`;
 }
 function learningSummary(s){
   const logs=LOG[s.id]||[];
